@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Petualangan Akhlak Mulia - Pink Edition</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Nunito', sans-serif; }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-float { animation: float 3.5s ease-in-out infinite; }
+    .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+
+    /* Tombol Pilihan yang Lebih Dominan */
+    .btn-option {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 2px solid #f9a8d4; /* pink-300 */
+      background: rgba(255, 255, 255, 0.9);
+    }
+    .btn-option:hover {
+      transform: scale(1.03);
+      background: #fdf2f8 !important; /* pink-50 */
+      border-color: #ec4899 !important; /* pink-500 */
+      box-shadow: 0 10px 15px -3px rgba(236, 72, 153, 0.2);
+    }
+    .btn-option.correct { 
+      background: linear-gradient(135deg, #4ade80, #22c55e) !important;
+      color: white !important;
+      border-color: #15803d !important;
+    }
+    .btn-option.wrong { 
+      background: linear-gradient(135deg, #f87171, #ef4444) !important;
+      color: white !important;
+      border-color: #b91c1c !important;
+    }
+
+    body::-webkit-scrollbar { display: none; }
+    .screen { display: none; }
+    .screen.active { display: flex; }
+
+    /* Background Pink yang Lebih Kuat */
+    #app {
+      background: linear-gradient(145deg, #fce7f3 0%, #fbcfe8 35%, #f9a8d4 70%, #f472b6 100%);
+      min-height: 100vh;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 20px 25px -5px rgba(219, 39, 119, 0.1);
+    }
+  </style>
+ </head>
+ <body class="h-full overflow-x-hidden">
+  <div id="app" class="w-full h-full relative">
+   
+   <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    <div class="animate-float absolute top-[8%] left-[12%] text-4xl">🌸</div>
+    <div class="animate-float absolute top-[25%] right-[8%] text-5xl opacity-80" style="animation-delay: 1.2s;">🎀</div>
+    <div class="animate-float absolute bottom-[12%] left-[15%] text-3xl" style="animation-delay: 2.5s;">💖</div>
+    <div class="animate-float absolute bottom-[20%] right-[15%] text-4xl opacity-70" style="animation-delay: 0.7s;">🌺</div>
+   </div>
+
+   <div id="screen-welcome" class="screen active flex-col items-center justify-center h-full w-full px-6 py-12 z-10">
+    <div class="text-center max-w-lg animate-fade-in glass-card p-10 rounded-[40px]">
+     <div class="text-8xl mb-6 drop-shadow-md">🕌</div>
+     <h1 class="text-4xl md:text-5xl font-black mb-3 text-pink-700">Petualangan Akhlak Mulia</h1>
+     <p class="text-lg font-bold mb-10 text-pink-500">Ayo uji wawasanmu sekarang! ✨</p>
+     
+     <div class="grid gap-5 w-full max-w-xs mx-auto">
+      <button onclick="selectLevel(1)" class="bg-pink-500 text-white font-black py-4 rounded-2xl shadow-lg hover:bg-pink-600 hover:scale-105 transition-all text-xl">
+        🟢 Level 1
+      </button>
+      <button onclick="selectLevel(2)" class="bg-pink-600 text-white font-black py-4 rounded-2xl shadow-lg hover:bg-pink-700 hover:scale-105 transition-all text-xl">
+        🟡 Level 2
+      </button>
+      <button onclick="selectLevel(3)" class="bg-pink-700 text-white font-black py-4 rounded-2xl shadow-lg hover:bg-pink-800 hover:scale-105 transition-all text-xl">
+        🔴 Level 3
+      </button>
+     </div>
+    </div>
+   </div>
+
+   <div id="screen-question" class="screen flex-col items-center justify-center h-full w-full px-6 z-10">
+    <div class="w-full max-w-lg">
+     <div class="mb-6">
+      <div class="flex justify-between text-sm font-black uppercase tracking-widest text-pink-800 mb-2 drop-shadow-sm">
+        <span id="q-level">Level</span>
+        <span id="q-counter">Soal 1</span>
+        <span id="q-score">Skor: 0</span>
+      </div>
+      <div class="w-full bg-white/40 rounded-full h-3 border border-pink-200">
+       <div id="q-progress" class="bg-pink-600 h-full rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(219,39,119,0.5)]" style="width:0%"></div>
+      </div>
+     </div>
+
+     <div class="glass-card rounded-[35px] p-8">
+      <div class="text-center mb-8">
+       <span id="q-icon" class="text-6xl mb-4 block drop-shadow-sm">🌟</span>
+       <p id="q-text" class="font-black text-2xl text-rose-900 leading-tight"></p>
+      </div>
+      <div id="q-options" class="space-y-4"></div>
+     </div>
+    </div>
+   </div>
+
+   <div id="screen-feedback" class="screen flex-col items-center justify-center h-full w-full z-10">
+    <div class="text-center px-6 animate-fade-in glass-card p-10 rounded-[40px] max-w-sm mx-auto">
+     <div id="feedback-icon" class="text-8xl mb-4"></div>
+     <h2 id="feedback-title" class="text-4xl font-black mb-3"></h2>
+     <p id="feedback-msg" class="text-rose-800 font-bold mb-8 leading-relaxed"></p>
+     <button onclick="nextQuestion()" class="bg-pink-600 text-white font-black px-12 py-4 rounded-2xl shadow-xl hover:bg-pink-700 transition-all text-xl w-full">Lanjut ➡️</button>
+    </div>
+   </div>
+
+   <div id="screen-finish" class="screen flex-col items-center justify-center h-full w-full z-10">
+    <div class="text-center px-6 animate-fade-in glass-card p-12 rounded-[50px] max-w-md mx-auto">
+     <div class="text-8xl mb-6">🏆</div>
+     <h2 class="text-4xl font-black text-pink-700 mb-6">Alhamdulillah!</h2>
+     <div class="bg-pink-50 p-8 rounded-[30px] border-4 border-pink-200 mb-8 shadow-inner">
+      <p class="text-pink-500 font-black uppercase tracking-tighter mb-2">Total Skor Kamu</p>
+      <p id="score-display" class="text-7xl font-black text-pink-600 mb-4 tracking-tighter">0/0</p>
+      <div id="score-stars" class="flex justify-center gap-2 text-4xl"></div>
+     </div>
+     <button onclick="resetGame()" class="bg-pink-600 text-white font-black px-12 py-5 rounded-3xl shadow-2xl hover:bg-pink-700 hover:scale-105 transition-all text-2xl w-full">Main Lagi 🔁</button>
+    </div>
+   </div>
+
+  </div>
+
+  <script>
+    // Data soal diperbanyak & diperluas (21 soal total)
+    const questionsByLevel = {
+      1: [
+        { q: "Apa arti dari jujur dalam Islam?", options: ["Berkata apa adanya", "Berkata agar disenangi", "Diam saja"], answer: 0, icon: "🗣️", exp: "Jujur (Siddiq) adalah kesesuaian antara lisan dan kenyataan." },
+        { q: "Malu adalah sebagian dari...", options: ["Kekayaan", "Iman", "Kepandaian"], answer: 1, icon: "☺️", exp: "Sifat malu menjaga kita dari melakukan perbuatan buruk." },
+        { q: "Menghormati orang tua disebut istilah...", options: ["Birrul Walidain", "Silaturahmi", "Tawadhu"], answer: 0, icon: "👴", exp: "Bakti pada orang tua adalah amalan yang sangat utama." },
+        { q: "Apa yang diucapkan saat mendapat nikmat?", options: ["Astaghfirullah", "Alhamdulillah", "Subhanallah"], answer: 1, icon: "🤲", exp: "Alhamdulillah adalah wujud syukur kita kepada Allah." },
+        { q: "Sifat merasa paling hebat disebut...", options: ["Ujub", "Sombong", "Riya"], answer: 1, icon: "🚫", exp: "Sombong adalah menolak kebenaran dan meremehkan manusia." },
+        { q: "Memberikan barang milik kita dengan ikhlas...", options: ["Sewa", "Sedekah", "Pinjam"], answer: 1, icon: "🎁", exp: "Sedekah mensucikan harta dan membantu sesama." },
+        { q: "Balasan bagi orang yang penyabar adalah...", options: ["Pujian", "Pahala tanpa batas", "Uang"], answer: 1, icon: "⏳", exp: "Pahala sabar tidak terhingga di sisi Allah." }
+      ],
+      2: [
+        { q: "Perbedaan antara Riya dan Sum'ah?", options: ["Riya: Ingin dilihat, Sum'ah: Ingin didengar", "Riya: Ingin dipuji, Sum'ah: Ingin uang", "Tidak ada beda"], answer: 0, icon: "👂", exp: "Keduanya adalah penyakit hati yang merusak pahala amal." },
+        { q: "Sikap pertengahan antara sombong & rendah diri?", options: ["Iffah", "Tawadhu", "Qana'ah"], answer: 1, icon: "⚖️", exp: "Tawadhu adalah rendah hati namun tetap bermartabat." },
+        { q: "Membicarakan keburukan orang lain disebut...", options: ["Nasihat", "Ghibah", "Diskusi"], answer: 1, icon: "🙊", exp: "Ghibah dilarang karena seperti memakan daging saudara sendiri." },
+        { q: "Qana'ah berarti merasa cukup dengan...", options: ["Harta dikit", "Pemberian Allah", "Hasil kerja"], answer: 1, icon: "💎", exp: "Harta sejati adalah kekayaan hati yang merasa cukup." },
+        { q: "Hukum menepati janji dalam Islam?", options: ["Sunnah", "Mubah", "Wajib"], answer: 2, icon: "🤝", exp: "Ingkar janji adalah salah satu tanda orang munafik." },
+        { q: "Amal karena ingin pujian manusia disebut...", options: ["Munafik", "Syirik Kecil (Riya)", "Fasik"], answer: 1, icon: "🎭", exp: "Riya menghapus pahala ibadah yang dilakukan." },
+        { q: "Arti dari Istiqomah adalah...", options: ["Cepat selesai", "Teguh pendirian", "Berubah-ubah"], answer: 1, icon: "🛤️", exp: "Istiqomah lebih baik daripada seribu karomah." }
+      ],
+      3: [
+        { q: "Tingkatan sabar tertinggi menurut ulama?", options: ["Sabar musibah", "Sabar dalam ketaatan", "Sabar dari maksiat"], answer: 1, icon: "🌋", exp: "Sabar dalam ketaatan butuh perjuangan yang rutin dan terus-menerus." },
+        { q: "Istilah 'Iffah' secara spesifik artinya...", options: ["Menjaga kesucian diri", "Menjaga harta", "Menjaga lisan"], answer: 0, icon: "🛡️", exp: "Iffah menjauhkan kita dari segala yang merusak kehormatan." },
+        { q: "Apa beda mendasar 'Adab' dan 'Akhlak'?", options: ["Adab: norma sosial, Akhlak: karakter jiwa", "Adab: untuk ortu, Akhlak: untuk Allah", "Sama saja"], answer: 0, icon: "🧩", exp: "Adab adalah etika lahiriah, Akhlak adalah sumber batiniahnya." },
+        { q: "Cara terbaik membuang rasa 'Hasad'?", options: ["Menjauhi teman", "Mendoakan keberkahan baginya", "Bekerja lebih keras"], answer: 1, icon: "🔥", exp: "Mendoakan orang lain akan membawa malaikat mendoakan kita juga." },
+        { q: "HR. Bukhari: 'Kebaikan (Al-Birr) itu adalah...'?", options: ["Banyak Shalat", "Akhlak yang baik", "Mencari ilmu"], answer: 1, icon: "📜", exp: "Akhlak adalah timbangan terberat di hari kiamat nanti." },
+        { q: "Meninggalkan yang ragu-ragu karena takut haram?", options: ["Zuhud", "Wara'", "Qana'ah"], answer: 1, icon: "🌫️", exp: "Wara' menjaga seorang mukmin dari keterpelesetan dosa." },
+        { q: "Dampak utama 'Su'udzon' terhadap persaudaraan?", options: ["Mempercepat kerja", "Merusak ukhuwah", "Meningkatkan waspada"], answer: 1, icon: "💔", exp: "Buruk sangka adalah sedalam-dalamnya dusta (Akdzabul Hadits)." }
+      ]
+    };
+
+    let currentQ = 0, score = 0, currentLevel = 1, questions = [];
+
+    function showScreen(name) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-' + name).classList.add('active');
+    }
+
+    function selectLevel(level) {
+      currentLevel = level;
+      questions = questionsByLevel[level];
+      score = 0; currentQ = 0;
+      loadQuestion();
+      showScreen('question');
+    }
+
+    function loadQuestion() {
+      const q = questions[currentQ];
+      document.getElementById('q-level').textContent = `Level ${currentLevel}`;
+      document.getElementById('q-counter').textContent = `Soal ${currentQ + 1}/${questions.length}`;
+      document.getElementById('q-score').textContent = `Skor: ${score}`;
+      document.getElementById('q-progress').style.width = `${((currentQ) / questions.length) * 100}%`;
+      document.getElementById('q-icon').textContent = q.icon;
+      document.getElementById('q-text').textContent = q.q;
+
+      const container = document.getElementById('q-options');
+      container.innerHTML = '';
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-option w-full text-left font-black px-6 py-5 rounded-2xl flex items-center gap-4 shadow-sm';
+        btn.innerHTML = `<span class="bg-pink-500 text-white w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-xl">${String.fromCharCode(65+i)}</span><span class="text-rose-900 text-lg">${opt}</span>`;
+        btn.onclick = () => checkAnswer(i);
+        container.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(idx) {
+      const q = questions[currentQ];
+      const isCorrect = idx === q.answer;
+      if(isCorrect) score++;
+
+      document.getElementById('feedback-icon').textContent = isCorrect ? "🎉" : "😢";
+      document.getElementById('feedback-title').textContent = isCorrect ? "MasyaAllah!" : "Astagfirullah..";
+      document.getElementById('feedback-title').style.color = isCorrect ? "#db2777" : "#ef4444";
+      document.getElementById('feedback-msg').textContent = isCorrect ? `Benar! ${q.exp}` : `Kurang tepat. ${q.exp}`;
+      
+      showScreen('feedback');
+    }
+
+    function nextQuestion() {
+      currentQ++;
+      if(currentQ >= questions.length) {
+        showFinish();
+      } else {
+        loadQuestion();
+        showScreen('question');
+      }
+    }
+
+    function showFinish() {
+      document.getElementById('score-display').textContent = `${score}/${questions.length}`;
+      const stars = document.getElementById('score-stars');
+      stars.innerHTML = '';
+      const starCount = Math.round((score / questions.length) * 5);
+      for (let i = 0; i < 5; i++) stars.innerHTML += (i < starCount ? '⭐' : '☆');
+      showScreen('finish');
+    }
+
+    function resetGame() { showScreen('welcome'); }
+
+    window.elementSdk.init({
+      defaultConfig: { game_title: "Petualangan Akhlak Mulia" },
+      onConfigChange: (config) => { 
+        if(config.game_title) document.querySelector('h1').textContent = config.game_title;
+      }
+    });
+  </script>
+ </body>
+</html>
